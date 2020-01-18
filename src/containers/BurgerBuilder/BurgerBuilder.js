@@ -1,10 +1,10 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
 import Aux from '../../hoc/Aux';
 import Burger from '../../components/Burger/Burger';
 import BuildControls from '../../components/BuildControls/BuildControls';
 
-class BurgerBuilder extends Component{
+class BurgerBuilder extends Component {
 
     state = {
         ingredients: {
@@ -14,18 +14,44 @@ class BurgerBuilder extends Component{
             meat: 0
         },
         buildControls: [
-            {label: 'Salad', type: 'salad'},
-            {label: 'Bacon', type: 'bacon'},
-            {label: 'Meat', type: 'meat'},
-            {label: 'Cheese', type: 'cheese'}
+            { label: 'Salad', type: 'salad' },
+            { label: 'Bacon', type: 'bacon' },
+            { label: 'Meat', type: 'meat' },
+            { label: 'Cheese', type: 'cheese' }
         ]
     }
 
-    render(){
+    OnLessButtonClicked = (type) => {
+        const oldCount = this.state.ingredients[type];
+        let newCount = oldCount;
+        if (oldCount > 0) {
+            newCount = newCount - 1;
+        }
+        const updatedIngredients = {
+            ...this.state.ingredients
+        };
+        updatedIngredients[type] = newCount;
+        this.setState({ ingredients: updatedIngredients });
+    }
+
+    OnMoreButtonClicked = (type) => {
+        const oldCount = this.state.ingredients[type];
+        const newCount = oldCount + 1;
+        const updatedIngredients = {
+            ...this.state.ingredients
+        };
+        updatedIngredients[type] = newCount;
+        this.setState({ ingredients: updatedIngredients });
+    }
+
+    render() {
         return (
             <Aux>
-                <Burger ingredients={this.state.ingredients}/>
-                <BuildControls controls={this.state.buildControls}/>
+                <Burger ingredients={this.state.ingredients} />
+                <BuildControls
+                    controls={this.state.buildControls}
+                    moreClick={this.OnMoreButtonClicked}
+                    lessClick={this.OnLessButtonClicked} />
             </Aux>
         );
     }

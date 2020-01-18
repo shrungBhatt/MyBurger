@@ -6,13 +6,17 @@ import classes from './BuildControls.css';
 const buildControls = (props) => {
 
     const listOfControls = props.controls.map((control) => {
-        return <BuildControl label={control.label}/>
+        return <BuildControl key={control.label}
+            label={control.label}
+            type={control.type}
+            moreClick={props.moreClick}
+            lessClick={props.lessClick} />
     });
 
     return (
-    <div className={classes.BuildControls}>
-        {listOfControls}
-    </div>
+        <div className={classes.BuildControls}>
+            {listOfControls}
+        </div>
     )
 }
 
