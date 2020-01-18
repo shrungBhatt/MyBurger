@@ -10,13 +10,16 @@ const buildControls = (props) => {
             label={control.label}
             type={control.type}
             moreClick={props.moreClick}
-            lessClick={props.lessClick} />
+            lessClick={props.lessClick}
+            disabled={props.disabled[control.type]} />
     });
 
     return (
         <div className={classes.BuildControls}>
             <div>Total Price: <strong>{props.totalPrice.toFixed(2)}</strong></div>
             {listOfControls}
+            <button className={classes.OrderButton}
+                disabled={!props.purchasable}>ORDER NOW</button>
         </div>
     )
 }
