@@ -4,6 +4,13 @@ import Aux from '../../hoc/Aux';
 import Burger from '../../components/Burger/Burger';
 import BuildControls from '../../components/BuildControls/BuildControls';
 
+const INGREDIENT_PRICES = {
+    salad: 0.5,
+    cheese: 0.4,
+    meat: 1.3,
+    bacon: 0.7
+};
+
 class BurgerBuilder extends Component {
 
     state = {
@@ -18,20 +25,23 @@ class BurgerBuilder extends Component {
             { label: 'Bacon', type: 'bacon' },
             { label: 'Meat', type: 'meat' },
             { label: 'Cheese', type: 'cheese' }
-        ]
+        ],
+        totalPrice: 4
     }
 
     OnLessButtonClicked = (type) => {
         const oldCount = this.state.ingredients[type];
         let newCount = oldCount;
+        let newTotalPrice = this.state.totalPrice;
         if (oldCount > 0) {
             newCount = newCount - 1;
+            newTotalPrice = newTotalPrice - INGREDIENT_PRICES[type];
         }
         const updatedIngredients = {
             ...this.state.ingredients
         };
         updatedIngredients[type] = newCount;
-        this.setState({ ingredients: updatedIngredients });
+        this.setState({ ingredients: updatedIngredients, totalPrice: newTotalPrice });
     }
 
     OnMoreButtonClicked = (type) => {
@@ -41,7 +51,8 @@ class BurgerBuilder extends Component {
             ...this.state.ingredients
         };
         updatedIngredients[type] = newCount;
-        this.setState({ ingredients: updatedIngredients });
+        const newTotalPrice = this.state.totalPrice + INGREDIENT_PRICES[type];
+        this.setState({ ingredients: updatedIngredients, totalPrice: newTotalPrice });
     }
 
     render() {
@@ -51,7 +62,8 @@ class BurgerBuilder extends Component {
                 <BuildControls
                     controls={this.state.buildControls}
                     moreClick={this.OnMoreButtonClicked}
-                    lessClick={this.OnLessButtonClicked} />
+                    lessClick={this.OnLessButtonClicked}
+                    totalPrice={this.state.totalPrice} />
             </Aux>
         );
     }
