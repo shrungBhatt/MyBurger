@@ -29,7 +29,8 @@ class BurgerBuilder extends Component {
             { label: 'Cheese', type: 'cheese' }
         ],
         totalPrice: 4,
-        purchasable: false
+        purchasable: false,
+        purchase: false
     }
 
     updatePrachasable(ingredients) {
@@ -72,6 +73,14 @@ class BurgerBuilder extends Component {
         this.updatePrachasable(updatedIngredients);
     }
 
+    OnOrderButtonClicked = () => {
+        this.setState({ purchase: true });
+    };
+
+    OnBackdropClicked = () => {
+        this.setState({ purchase: false });
+    };
+
     render() {
         const disabledInfo = {
             ...this.state.ingredients
@@ -83,8 +92,10 @@ class BurgerBuilder extends Component {
 
         return (
             <Aux>
-                <Modal>
-                    <OrderSummary ingredients={this.state.ingredients}/>
+                <Modal 
+                    show={this.state.purchase}
+                    clicked={this.OnBackdropClicked}>
+                    <OrderSummary ingredients={this.state.ingredients} />
                 </Modal>
                 <Burger ingredients={this.state.ingredients} />
                 <BuildControls
@@ -93,6 +104,7 @@ class BurgerBuilder extends Component {
                     lessClick={this.OnLessButtonClicked}
                     totalPrice={this.state.totalPrice}
                     purchasable={this.state.purchasable}
+                    order={this.OnOrderButtonClicked}
                     disabled={disabledInfo} />
             </Aux>
         );
