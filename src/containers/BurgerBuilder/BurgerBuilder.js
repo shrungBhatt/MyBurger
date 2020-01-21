@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 
+import axios from '../../axios-orders';
 import Aux from '../../hoc/Aux/Aux';
 import Burger from '../../components/Burger/Burger';
 import BuildControls from '../../components/BuildControls/BuildControls';
@@ -31,7 +32,7 @@ class BurgerBuilder extends Component {
         totalPrice: 4,
         purchasable: false,
         purchase: false
-    }
+    };
 
     updatePrachasable(ingredients) {
         const sum = Object.keys(ingredients)
@@ -59,7 +60,7 @@ class BurgerBuilder extends Component {
         updatedIngredients[type] = newCount;
         this.setState({ ingredients: updatedIngredients, totalPrice: newTotalPrice });
         this.updatePrachasable(updatedIngredients);
-    }
+    };
 
     OnMoreButtonClicked = (type) => {
         const oldCount = this.state.ingredients[type];
@@ -71,7 +72,7 @@ class BurgerBuilder extends Component {
         const newTotalPrice = this.state.totalPrice + INGREDIENT_PRICES[type];
         this.setState({ ingredients: updatedIngredients, totalPrice: newTotalPrice });
         this.updatePrachasable(updatedIngredients);
-    }
+    };
 
     OnOrderButtonClicked = () => {
         this.setState({ purchase: true });
@@ -86,7 +87,29 @@ class BurgerBuilder extends Component {
     };
 
     OnPurchaseContinueClick = () => {
-        alert('That sounds preety great!');
+
+        const order = {
+            ingredients: this.state.ingredients,
+            price: this.state.totalPrice,
+            customer: {
+                name: 'Shrung Bhatt',
+                address: {
+                    street: 'Test1',
+                    zipCode: '123125',
+                    country: 'India'
+                },
+                email: 'test@test.com'
+            },
+            deliveryMethod: 'fastest'
+        }
+
+        axios.post('/orders.json', order)
+            .then(response => {
+                console.log(response);
+            })
+            .catch(error => {
+                console.log(error);
+            });
     }
 
     render() {
