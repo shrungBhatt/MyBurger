@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 
 import axios from '../../axios-orders';
 import Aux from '../../hoc/Aux/Aux';
@@ -18,18 +18,22 @@ const INGREDIENT_PRICES = {
 
 class BurgerBuilder extends Component {
 
+    componentDidMount() {
+        axios.get('https://my-burger-a3724.firebaseio.com/ingredients.json')
+            .then(response => {
+                this.setState({ingredients: response.data});
+                this.updatePurchasable(response.data);
+            })
+            .catch(error => console.log(error.message));
+    }
+
     state = {
-        ingredients: {
-            salad: 0,
-            bacon: 0,
-            cheese: 0,
-            meat: 0
-        },
+        ingredients: null,
         buildControls: [
-            { label: 'Salad', type: 'salad' },
-            { label: 'Bacon', type: 'bacon' },
-            { label: 'Meat', type: 'meat' },
-            { label: 'Cheese', type: 'cheese' }
+            {label: 'Salad', type: 'salad'},
+            {label: 'Bacon', type: 'bacon'},
+            {label: 'Meat', type: 'meat'},
+            {label: 'Cheese', type: 'cheese'}
         ],
         totalPrice: 4,
         purchasable: false,
@@ -46,7 +50,7 @@ class BurgerBuilder extends Component {
                 return sum + el;
             }, 0);
 
-        this.setState({ purchasable: sum > 0 })
+        this.setState({purchasable: sum > 0})
     }
 
     OnLessButtonClicked = (type) => {
@@ -61,7 +65,7 @@ class BurgerBuilder extends Component {
             ...this.state.ingredients
         };
         updatedIngredients[type] = newCount;
-        this.setState({ ingredients: updatedIngredients, totalPrice: newTotalPrice });
+        this.setState({ingredients: updatedIngredients, totalPrice: newTotalPrice});
         this.updatePurchasable(updatedIngredients);
     };
 
@@ -73,20 +77,20 @@ class BurgerBuilder extends Component {
         };
         updatedIngredients[type] = newCount;
         const newTotalPrice = this.state.totalPrice + INGREDIENT_PRICES[type];
-        this.setState({ ingredients: updatedIngredients, totalPrice: newTotalPrice });
+        this.setState({ingredients: updatedIngredients, totalPrice: newTotalPrice});
         this.updatePurchasable(updatedIngredients);
     };
 
     OnOrderButtonClicked = () => {
-        this.setState({ purchase: true });
+        this.setState({purchase: true});
     };
 
     OnBackdropClicked = () => {
-        this.setState({ purchase: false });
+        this.setState({purchase: false});
     };
 
     OnPurchaseCancelClick = () => {
-        this.setState({ purchase: false });
+        this.setState({purchase: false});
     };
 
     OnPurchaseContinueClick = () => {
@@ -121,20 +125,40 @@ class BurgerBuilder extends Component {
     render() {
         const disabledInfo = {
             ...this.state.ingredients
-        }
+        };
 
         for (let key in disabledInfo) {
             disabledInfo[key] = disabledInfo[key] <= 0;
         }
 
-        let orderSummary = <OrderSummary
-            totalPrice={this.state.totalPrice}
-            ingredients={this.state.ingredients}
-            purchaseCancelled={this.OnPurchaseCancelClick}
-            purchaseContinued={this.OnPurchaseContinueClick} />;
+        let orderSummary = null;
 
-        if(this.state.loading){
+        if (this.state.loading) {
             orderSummary = <Spinner/>
+        }
+
+        let burger = <Spinner/>;
+
+        if (this.state.ingredients) {
+            burger = (
+                <Aux>
+                    <Burger ingredients={this.state.ingredients}/>
+                    <BuildControls
+                        controls={this.state.buildControls}
+                        moreClick={this.OnMoreButtonClicked}
+                        lessClick={this.OnLessButtonClicked}
+                        totalPrice={this.state.totalPrice}
+                        purchasable={this.state.purchasable}
+                        order={this.OnOrderButtonClicked}
+                        disabled={disabledInfo}/>
+                </Aux>
+            );
+
+            orderSummary = <OrderSummary
+                totalPrice={this.state.totalPrice}
+                ingredients={this.state.ingredients}
+                purchaseCancelled={this.OnPurchaseCancelClick}
+                purchaseContinued={this.OnPurchaseContinueClick}/>;
         }
 
         return (
@@ -144,15 +168,7 @@ class BurgerBuilder extends Component {
                     clicked={this.OnBackdropClicked}>
                     {orderSummary}
                 </Modal>
-                <Burger ingredients={this.state.ingredients} />
-                <BuildControls
-                    controls={this.state.buildControls}
-                    moreClick={this.OnMoreButtonClicked}
-                    lessClick={this.OnLessButtonClicked}
-                    totalPrice={this.state.totalPrice}
-                    purchasable={this.state.purchasable}
-                    order={this.OnOrderButtonClicked}
-                    disabled={disabledInfo} />
+                {burger}
             </Aux>
         );
     }

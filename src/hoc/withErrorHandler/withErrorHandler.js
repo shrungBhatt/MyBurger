@@ -4,19 +4,15 @@ import Aux from '../Aux/Aux';
 import Modal from "../../components/UI/Modal/Modal";
 
 const withErrorHandler = (WithComponent, axios) => {
-    return class extends Component{
+    return class extends Component {
 
-        state = {
-            error: null
-        }
-
-        componentDidMount() {
-
+        constructor(props) {
+            super(props);
             axios.interceptors.request.use(
-               value => {
-                   this.setState({error: null});
-                   return value;
-               }
+                value => {
+                    this.setState({error: null});
+                    return value;
+                }
             );
 
             axios.interceptors.response.use(
@@ -26,6 +22,10 @@ const withErrorHandler = (WithComponent, axios) => {
                 }
             );
         }
+        state = {
+            error: null
+        };
+
 
         errorConfirmedClickHandler = () => {
             this.setState({error: null});
@@ -33,7 +33,6 @@ const withErrorHandler = (WithComponent, axios) => {
 
 
         render() {
-
             return (
                 <Aux>
                     <Modal show={this.state.error} clicked={this.errorConfirmedClickHandler}>
