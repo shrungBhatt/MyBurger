@@ -6,16 +6,19 @@ import Modal from "../../components/UI/Modal/Modal";
 const withErrorHandler = (WithComponent, axios) => {
     return class extends Component {
 
+        reqInterceptor;
+        resInterceptor;
+
         constructor(props) {
             super(props);
-            axios.interceptors.request.use(
+            this.reqInterceptor = axios.interceptors.request.use(
                 value => {
                     this.setState({error: null});
                     return value;
                 }
             );
 
-            axios.interceptors.response.use(
+            this.resInterceptor = axios.interceptors.response.use(
                 res => res,
                 error => {
                     this.setState({error: error});
@@ -26,6 +29,10 @@ const withErrorHandler = (WithComponent, axios) => {
             error: null
         };
 
+        componentWillUnmount() {
+            axios.interceptors.request.eject(this.reqInterceptor);
+            axios.interceptors.response.eject(this.resInterceptor);
+        }
 
         errorConfirmedClickHandler = () => {
             this.setState({error: null});
